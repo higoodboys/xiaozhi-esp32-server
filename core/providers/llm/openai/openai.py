@@ -1,5 +1,6 @@
 from config.logger import setup_logging
 import openai
+import httpx
 from core.providers.llm.base import LLMProviderBase
 
 TAG = __name__
@@ -16,7 +17,15 @@ class LLMProvider(LLMProviderBase):
             self.base_url = config.get("url")
         if "你" in self.api_key:
             logger.bind(tag=TAG).error("你还没配置LLM的密钥，请在配置文件中配置密钥，否则无法正常工作")
-        self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
+        
+        if "x.ai" in self.base_url:
+            self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url,
+                                        http_client=httpx.Client(
+                                            proxies="http://127.0.0.1:1080",  # 直接传入单一代理URL也支持
+                                            timeout=httpx.Timeout(10.0)  # 可选：设置超时
+                                        ))
+        else:
+            self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
 
     def response(self, session_id, dialogue):
         try:
