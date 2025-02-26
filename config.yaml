@@ -104,6 +104,7 @@ LLM:
     # 定义LLM API类型
     type: openai
     # 可在这里找到你的 api_key https://bailian.console.aliyun.com/?apiKey=1#/api-key
+    # xai https://api.x.ai/v1
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
     model_name: qwen-turbo
     api_key: 你的deepseek api key
