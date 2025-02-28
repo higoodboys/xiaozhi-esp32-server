@@ -241,7 +241,7 @@ class ConnectionHandler:
                     start = len(response_message)
 
         # 处理剩余的响应
-        if start < len(response_message):
+        if start < len(response_message.strip()):
             segment_text = "".join(response_message[start:])
             if len(segment_text) > 0:
                 self.recode_first_last_text(segment_text)
@@ -300,7 +300,7 @@ class ConnectionHandler:
                 self.logger.bind(tag=TAG).error(f"tts_priority priority_thread: {text}{e}")
 
     def speak_and_play(self, text):
-        if text is None or len(text) <= 0:
+        if text is None or len(text.strip()) <= 0:
             self.logger.bind(tag=TAG).info(f"无需tts转换，query为空，{text}")
             return None, text
         tts_file = self.tts.to_tts(text)

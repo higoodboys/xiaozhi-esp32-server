@@ -132,9 +132,11 @@ class TTSProvider(TTSProviderBase):
             except:
                 splitStr = [["cn", text]]
 
-            logger.bind(tag=TAG).info(f"kokoro voice:{str(splitStr)}")
+            logger.bind(tag=TAG).info(f"kokoro voice:[{text.strip()}]-{str(splitStr)}")
             start_time_all = time.time()
             for one in splitStr:
+                if len(one[1].strip()) == 0:
+                    break
                 start_time = time.time()
                 # Use streaming endpoint with mp3 format
                 async with openai.audio.speech.with_streaming_response.create(
