@@ -223,6 +223,8 @@ class ConnectionHandler:
         # 提交 TTS 任务到线程池
         self.llm_finish_task = False
         for content in llm_responses:
+            if len(content.strip()) == 0:
+                continue
             response_message.append(content)
             # 如果中途被打断，就停止生成
             if self.client_abort:
@@ -241,7 +243,7 @@ class ConnectionHandler:
                     start = len(response_message)
 
         # 处理剩余的响应
-        if start < len(response_message.strip()):
+        if start < len(response_message):
             segment_text = "".join(response_message[start:])
             if len(segment_text) > 0:
                 self.recode_first_last_text(segment_text)

@@ -87,7 +87,7 @@ def _find_best_match(potential_song, music_files):
     
     return best_match if highest_score >= 50 else None
 
-def _clean_for_matching(self, text):
+def _clean_for_matching(text):
     """统一匹配清洗标准"""
     # 转换为小写
     text = text.lower()
