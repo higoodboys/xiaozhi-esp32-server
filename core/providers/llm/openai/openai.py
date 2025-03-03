@@ -18,10 +18,15 @@ class LLMProvider(LLMProviderBase):
         if "你" in self.api_key:
             logger.bind(tag=TAG).error("你还没配置LLM的密钥，请在配置文件中配置密钥，否则无法正常工作")
         
+        if 'proxy_url' in config:
+            self.proxy_url = config.get("proxy_url")
+        else:
+            self.proxy_url = "http://127.0.0.1:1080"
+
         if "x.ai" in self.base_url or "googleapis" in self.base_url:
             self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url,
                                         http_client=httpx.Client(
-                                            proxies="http://127.0.0.1:1080",  # 直接传入单一代理URL也支持
+                                            proxies=self.proxy_url,  # 直接传入单一代理URL也支持
                                             timeout=httpx.Timeout(10.0)  # 可选：设置超时
                                         ))
         else:

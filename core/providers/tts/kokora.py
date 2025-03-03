@@ -8,7 +8,6 @@ import re
 from datetime import datetime
 from pathlib import Path
 from openai import AsyncOpenAI
-from langdetect import detect
 from loguru import logger
 from core.providers.tts.base import TTSProviderBase
 

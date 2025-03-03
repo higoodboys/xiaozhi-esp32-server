@@ -109,6 +109,7 @@ LLM:
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
     model_name: qwen-turbo
     api_key: 你的deepseek api key
+    proxy_url: http://127.0.0.1:1080
   DeepSeekLLM:
     # 定义LLM API类型
     type: openai
