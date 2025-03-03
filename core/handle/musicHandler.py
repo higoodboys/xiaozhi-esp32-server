@@ -4,6 +4,10 @@ import random
 import difflib
 import re
 import traceback
+from pathlib import Path
+import time
+from core.handle.sendAudioHandle import send_stt_message
+from core.utils import p3
 from fuzzywuzzy import fuzz
 from core.handle.sendAudioHandle import sendAudioMessage, send_stt_message
 
@@ -115,6 +119,8 @@ class MusicHandler:
                 self.music_config.get("music_dir", "./music")  # 默认路径修改
             )
             self.music_related_keywords = self.music_config.get("music_commands", [])
+            self.music_ext = self.music_config.get("music_ext", (".mp3", ".wav", ".p3"))
+            self.refresh_time = self.music_config.get("refresh_time", 60)
         else:
             self.music_dir = os.path.abspath("./music")
             self.music_related_keywords = ["来一首歌", "唱一首歌", "播放音乐", "来点音乐", "背景音乐", "放首歌",
@@ -206,13 +212,19 @@ class MusicHandler:
                     return
                 selected_music = random.choice(self.g_music_files)
                 music_path = os.path.join(self.music_dir, selected_music)
+                if not os.path.exists(music_path):
+                    logger.bind(tag=TAG).error(f"选定的音乐文件不存在: {music_path}")
+                    return
             text = f"正在播放{selected_music}"
             await send_stt_message(conn, text)
             conn.tts_first_text = selected_music
             conn.tts_last_text = selected_music
             conn.llm_finish_task = True
-            opus_packets, duration = conn.tts.wav_to_opus_data(music_path)
-            await sendAudioMessage(conn, opus_packets, duration, selected_music)
+            if music_path.endswith(".p3"):
+                opus_packets, duration = p3.decode_opus_from_file(music_path)
+            else:
+                opus_packets, duration = conn.tts.wav_to_opus_data(music_path)
+            conn.audio_play_queue.put((opus_packets, selected_music))
 
         except Exception as e:
             logger.bind(tag=TAG).error(f"播放音乐失败: {str(e)}")
